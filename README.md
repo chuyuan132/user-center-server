@@ -1,73 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## 最佳实践文章参考
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+@see[https://blog.csdn.net/qq_45890533/article/details/133222017]
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 选型
 
-## Description
+数据库ORM框架选型： praisma @see[https://prisma.nodejs.cn/]
+DTO校验: 管道 + class-validator @see[https://zhuanlan.zhihu.com/p/381739245]
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 连接数据库
 
-## Installation
+npx prisma db pull 从数据库中同步model模型过来
+npx prisma generate 在node_modules下生成客户端
 
-```bash
-$ npm install
-```
+## 数据库设计
 
-## Running the app
+1、用户表
 
-```bash
-# development
-$ npm run start
+CREATE TABLE USER (
 
-# watch mode
-$ npm run start:dev
+id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
 
-# production mode
-$ npm run start:prod
-```
+nickname VARCHAR(255) NOT NULL COMMENT '昵称',
 
-## Test
+avatar_url VARCHAR(255) NOT NULL COMMENT '用户头像',
 
-```bash
-# unit tests
-$ npm run test
+user_account VARCHAR(255) NOT NULL COMMENT '账号',
 
-# e2e tests
-$ npm run test:e2e
+user_password VARCHAR(255) NOT NULL COMMENT '密码',
 
-# test coverage
-$ npm run test:cov
-```
+phone VARCHAR(255) NOT NULL COMMENT '手机号码',
 
-## Support
+gender TINYINT NOT NULL COMMENT '性别',
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+email VARCHAR(255) NOT NULL COMMENT '邮箱',
 
-## Stay in touch
+user_status TINYINT NOT NULL COMMENT '用户态 1 开启 2 禁用',
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+is_delete TINYINT NOT NULL COMMENT '是否删除 1 未删除 2 删除',
 
-## License
+created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 
-Nest is [MIT licensed](LICENSE).
+updated_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+CURRENT_TIMESTAMP COMMENT '更新时间'
+
+) COMMENT = '用户表'
+
+## 需求分析
+
+一、注册
+1、前端：
+账号： 不少于4位
+密码： 不少于8位，包含大小写特殊符号数字
+再次输入密码
+加密传输
+
+2、后端：
+1、账号密码重复密码存在
+2、密码与重复密码一致
+3、账号密码格式校验
+4、账号是否重复
+5、插入数据库
